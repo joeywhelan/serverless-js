@@ -1,0 +1,19 @@
+{
+  "name": "serverless",
+  "version": "1.0.0",
+  "description": "Demo of usage of Elastic REST and Javascript APIs to build a serverless project",
+  "main": "demo.js",
+  "scripts": {
+    "start": "node demo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@elastic/elasticsearch": "^9.0.2",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "split2": "^4.2.0"
+  }
+}
