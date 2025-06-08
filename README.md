@@ -11,7 +11,7 @@
 This creates a deployment of Elasticsearch Serverless via API with use of the Elastic Javascript client library for a semantic search scenario.
 
 ## Architecture <a name="architecture"></a>
-![architecture](https://docs.google.com/drawings/d/e/2PACX-1vTTE8LEUr2QaIjLRF0GMwnTKaYZwCowCS5Zjc--tFc-dXK0e4zBkjuPKzzSdo5JmbvQzuDSaPxXrlsq/pub?w=742&h=530)  
+![architecture](assets/Highlevel-arch.jpg)  
 
 ## Features <a name="features"></a>
 - Builds an Elastic Serverless project via REST API
