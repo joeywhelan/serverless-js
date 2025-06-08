@@ -118,7 +118,8 @@ async function loadData(client, filePath, indexName) {
             return {
                 index: {_index: indexName}
             };
-        }
+        },
+        refreshOnCompletion: true
     });
     console.log(`${result.successful} documents indexed`);
 }
