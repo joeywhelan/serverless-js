@@ -1,11 +1,11 @@
-This article covers the deployment of an [Elastic Cloud Serverless](https://www.elastic.co/docs/deploy-manage/deploy/elastic-cloud/serverless) project and subsequent interaction with that project via the Elastic Javascript client.  A simple semantic search scenario is demonstrated.
+This article covers deploying [Elastic Cloud Serverless](https://www.elastic.co/docs/deploy-manage/deploy/elastic-cloud/serverless) project and subsequent interaction with that project via the Elastic JavaScript client.  It also demonstrates simple semantic search scenario.
 
-This entire demo is done via application-level code (Javascript).  
+This entire demo is done via application-level code (JavaScript).  
   - [Serverless REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/) is leveraged to create and delete a serverless project, from scratch
-  - [Elastic Javascript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript) is instantiated and used to index and search a sample dataset
+  - [Elastic JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript) is instantiated and used to index and search a sample dataset
 
 # Architecture #
-This demo places minimal load on the client device as the entire architecture is cloud-based, split between Elastic and [Azure Openai](https://azure.microsoft.com/en-us/products/ai-services/openai-service).  The demo application (demo.js) makes a series of Elastic serverless REST API and Javascript client calls.
+This demo places minimal load on the client device. The entire architecture is cloud-based, split between Elastic and [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service).  The demo application (demo.js) makes a series of Elastic serverless REST API and JavaScript client calls.
 
 ## High Level ##
 ![high-level architecture](assets/Highlevel-arch.jpg) 
@@ -14,10 +14,10 @@ This demo places minimal load on the client device as the entire architecture is
 ![application-level architecture](assets/Applevel-arch.jpg)
 
 # Functions #
-Below is a step-by-step explanation of an end-to-end build of Elastic Serverless deployment using Javascript code, only.
+Below is a step-by-step explanation of an end-to-end build of Elastic Serverless deployment using JavaScript code only.
 
 ## Create an Elastic Serverless Project ##
-The function below will initiate the build of a serverless project via [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-createelasticsearchproject).  In this case, I've request a project that is optimized for vector operations.
+The function below will initiate the build of a serverless project via [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-createelasticsearchproject).  In this case, I've requested a project optimized for vector operations.
 ### Code ###
 ```javascript
 async function createProject(name, url, key) {
@@ -68,7 +68,7 @@ async function createProject(name, url, key) {
 ```
 
 ## Wait For Build Completion ##
-The function below awaits the completion of the cloud build that was kicked-off from the step above.  The [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-getelasticsearchprojectstatus) is used for this function.
+The function below awaits the completion of the cloud build kicked off from the above step.  The [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-getelasticsearchprojectstatus) is used for this function.
 ### Code ###
 ```javascript
 async function projectReady(id, url, key) {
@@ -104,7 +104,7 @@ initialized
 ```
 
 ## Create an Azure OpenAI Inference Endpoint ##
-This function creates in inference endpoint to a pre-provisioned Azure Openai embedding resource.  This will allow automatic generation of embeddings during data ingestion and at query time.  The [Elastic Javascript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_inference.put) is used for this provisioning.
+This function creates an inference endpoint for a pre-provisioned Azure OpenAI embedding resource. This will automatically generate embeddings during data ingestion and query time.  The [Elastic JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_inference.put) is used for this provisioning.
 ### Code ###
 ```javascript
 async function createInferenceEP(client, inferenceId) {
@@ -143,7 +143,7 @@ async function createInferenceEP(client, inferenceId) {
 ```
 
 ## Create the Elasticsearch Index Mapping ##
-Using the [Javascript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_indices.create), I build an index mapping (schema) for the sample dataset that is included in this repo.  It's a series of documents on with meta data on news articles.  It's important to note that I'm using [multi-fields](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/multi-fields) to create[semantic_text](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/semantic-text) fields that will automate the embedding generations utilizing the Azure OpenAI inference endpoint I created in the step above.
+Using the [JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_indices.create), I built an index mapping (schema) for the sample dataset included in this repo.  It's a series of documents with metadata on news articles.  It's important to note that I'm using [multi-fields](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/multi-fields) to create [semantic_text](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/semantic-text) fields that will automate the embedding generation using the Azure OpenAI inference endpoint I created in the step above.
 ### Code ###
 ```javascript
 async function createIndexMapping(client, indexName, inferenceId) {  
@@ -188,7 +188,7 @@ async function createIndexMapping(client, indexName, inferenceId) {
 ```
 
 ## Data Load ##
-With the index mapping defined, I now do a bulk load of the JSON documents in the assets/articles.json file via the [Javascript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/client-helpers#bulk-helper).
+With the index mapping defined, I now perform a bulk load of the JSON documents in the assets/articles.json file via the [JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/client-helpers#bulk-helper).
 ### Code ###
 ```javascript
 async function loadData(client, filePath, indexName) {
@@ -209,7 +209,7 @@ async function loadData(client, filePath, indexName) {
 ```
 
 ## Semantic Search ##
-I next perform a semantic search with the [Javascript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_search) on the indexed 'articles' data set.  Note that the query embedding step is handled automatically.
+Next, perform a semantic search on the indexed "articles" dataset.  Note that the query embedding step is handled automatically.
 ### Code ###
 ```javascript
 async function semanticSearch(client, indexName, text) {
