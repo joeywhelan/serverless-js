@@ -8,10 +8,10 @@ This entire demo is done via application-level code (JavaScript).
 This demo places minimal load on the client device. The entire architecture is cloud-based, split between Elastic and [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service).  The demo application (demo.js) makes a series of Elastic serverless REST API and JavaScript client calls.
 
 ## High Level 
-![high-level architecture](assets/Highlevel-arch.jpg) 
+![high-level architecture](Highlevel-arch.jpg) 
 
 ## Application Level 
-![application-level architecture](assets/Applevel-arch.jpg)
+![application-level architecture](Applevel-arch.jpg)
 
 # Functions 
 Below is a step-by-step explanation of an end-to-end build of Elastic Serverless deployment using JavaScript code only.
