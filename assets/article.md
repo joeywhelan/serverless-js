@@ -4,21 +4,21 @@ This entire demo is done via application-level code (JavaScript).
   - [Serverless REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/) is leveraged to create and delete a serverless project, from scratch
   - [Elastic JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript) is instantiated and used to index and search a sample dataset
 
-# Architecture #
+# Architecture 
 This demo places minimal load on the client device. The entire architecture is cloud-based, split between Elastic and [Azure OpenAI](https://azure.microsoft.com/en-us/products/ai-services/openai-service).  The demo application (demo.js) makes a series of Elastic serverless REST API and JavaScript client calls.
 
-## High Level ##
+## High Level 
 ![high-level architecture](assets/Highlevel-arch.jpg) 
 
-## Application Level ##
+## Application Level 
 ![application-level architecture](assets/Applevel-arch.jpg)
 
-# Functions #
+# Functions 
 Below is a step-by-step explanation of an end-to-end build of Elastic Serverless deployment using JavaScript code only.
 
-## Create an Elastic Serverless Project ##
+## Create an Elastic Serverless Project 
 The function below will initiate the build of a serverless project via [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-createelasticsearchproject).  In this case, I've requested a project optimized for vector operations.
-### Code ###
+### Code 
 ```javascript
 async function createProject(name, url, key) {
     const parms = {
@@ -43,7 +43,7 @@ async function createProject(name, url, key) {
     }
 }
 ```
-### Result ###
+### Result 
 ```json
 {
   alias: 'demo-project-fb17e0',
@@ -67,9 +67,9 @@ async function createProject(name, url, key) {
 }
 ```
 
-## Wait For Build Completion ##
+## Wait For Build Completion 
 The function below awaits the completion of the cloud build kicked off from the above step.  The [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-getelasticsearchprojectstatus) is used for this function.
-### Code ###
+### Code 
 ```javascript
 async function projectReady(id, url, key) {
     const sleep = (ms = 0) => new Promise((resolve) => setTimeout(resolve,ms));
@@ -98,14 +98,14 @@ async function projectReady(id, url, key) {
     console.log(status);
 }
 ```
-### Result ###
+### Result 
 ```text
 initialized
 ```
 
-## Create an Azure OpenAI Inference Endpoint ##
+## Create an Azure OpenAI Inference Endpoint 
 This function creates an inference endpoint for a pre-provisioned Azure OpenAI embedding resource. This will automatically generate embeddings during data ingestion and query time.  The [Elastic JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_inference.put) is used for this provisioning.
-### Code ###
+### Code 
 ```javascript
 async function createInferenceEP(client, inferenceId) {
     const response = await client.inference.put({
@@ -124,7 +124,7 @@ async function createInferenceEP(client, inferenceId) {
     console.log(response);
 }
 ```
-### Result ###
+### Result 
 ```json
 {
   inference_id: 'azure_openai_embeddings',
@@ -142,9 +142,9 @@ async function createInferenceEP(client, inferenceId) {
 }
 ```
 
-## Create the Elasticsearch Index Mapping ##
+## Create the Elasticsearch Index Mapping 
 Using the [JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/api-reference#_indices.create), I built an index mapping (schema) for the sample dataset included in this repo.  It's a series of documents with metadata on news articles.  It's important to note that I'm using [multi-fields](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/multi-fields) to create [semantic_text](https://www.elastic.co/docs/reference/elasticsearch/mapping-reference/semantic-text) fields that will automate the embedding generation using the Azure OpenAI inference endpoint I created in the step above.
-### Code ###
+### Code 
 ```javascript
 async function createIndexMapping(client, indexName, inferenceId) {  
     const resp = await client.indices.create({
@@ -182,14 +182,14 @@ async function createIndexMapping(client, indexName, inferenceId) {
     console.log(resp);
 }
 ```
-### Result ###
+### Result 
 ```json
 { acknowledged: true, shards_acknowledged: true, index: 'articles' }
 ```
 
-## Data Load ##
+## Data Load 
 With the index mapping defined, I now perform a bulk load of the JSON documents in the assets/articles.json file via the [JavaScript client](https://www.elastic.co/docs/reference/elasticsearch/clients/javascript/client-helpers#bulk-helper).
-### Code ###
+### Code 
 ```javascript
 async function loadData(client, filePath, indexName) {
     const result = await client.helpers.bulk({
@@ -204,14 +204,14 @@ async function loadData(client, filePath, indexName) {
     console.log(`${result.successful} documents indexed`);
 }
 ```
-### Result ###
+### Result 
 ```text
 1000 documents indexed
 ```
 
-## Semantic Search ##
+## Semantic Search 
 Next, perform a semantic search on the indexed "articles" dataset.  Note that the query embedding step is handled automatically.
-### Code ###
+### Code 
 ```javascript
 async function semanticSearch(client, indexName, text) {
     const res = await client.search({
@@ -227,7 +227,7 @@ async function semanticSearch(client, indexName, text) {
     console.log(res.hits.hits);
 }
 ```
-### Result ###
+### Result 
 ```json
 [
   {
@@ -246,9 +246,9 @@ async function semanticSearch(client, indexName, text) {
 ]
 ```
 
-## Project Deletion ##
+## Project Deletion 
 Finally, I use the serverless [REST API](https://www.elastic.co/docs/api/doc/elastic-cloud-serverless/operation/operation-deleteelasticsearchproject) to delete this project.
-### Code ###
+### Code 
 ```javascript
 async function deleteProject(id) {
     let resp = await axios.delete(`${process.env.ELASTIC_API_URL}/${id}`, {
@@ -266,7 +266,7 @@ async function deleteProject(id) {
     }
 }
 ```
-### Result ###
+### Result
 ```text
 Project deletion successful
 ```
