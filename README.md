@@ -19,7 +19,7 @@ This creates a deployment of Elasticsearch Serverless via API with use of the El
 - Performs the following steps with the Javascript client:
     - Creates an Inference Endpoint to an Azure Openai embedding model
     - Creates an index mapping corresponding to a dataset in this repo
-    - Bulk loads the included JSON lines dataset (1000 documents)
+    - Bulk loads the included JSON lines dataset (1000 documents).  This Kaggle [dataset](https://www.kaggle.com/datasets/rmisra/news-category-dataset) was used.
     - Performs a sample semantic search against this dataset
 - Deletes the Elastic Serverless project
 
